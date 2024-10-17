@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: red;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-item {
+            padding: 10px;
+            background-color: #f1f1f1;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Usuários</h1>
+        <!-- Camada de Apresentação -->
+        <form id="userForm">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" placeholder="Digite o nome">
+            <label for="idade">Idade:</label>
+            <input type="number" id="idade" placeholder="Digite a idade">
+            <button type="button" onclick="cadastrarUsuario()">Cadastrar</button>
+        </form>
+
+        <div class="message" id="message"></div>
+
+        <!-- Lista de usuários cadastrados -->
+        <div class="user-list">
+            <h2>Usuários Cadastrados:</h2>
+            <div id="userList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Array que simula a persistência de dados
+        let usuariosCadastrados = [];
+
+        // Camada de Negócios: Função que valida se o usuário pode ser cadastrado
+        function validarDadosUsuario(nome, idade) {
+            if (nome === '' || idade === '') {
+                return { valido: false, mensagem: 'Nome e idade são obrigatórios.' };
+            }
+            if (idade < 18) {
+                return { valido: false, mensagem: 'Usuário deve ter mais de 18 anos.' };
+            }
+            return { valido: true };
+        }
+
+        // Camada de Persistência: Função que armazena o usuário no "banco de dados"
+        function salvarUsuario(nome, idade) {
+            usuariosCadastrados.push({ nome: nome, idade: idade });
+        }
+
+        // Camada de Apresentação: Função chamada ao enviar o formulário
+        function cadastrarUsuario() {
+            const nome = document.getElementById('nome').value;
+            const idade = document.getElementById('idade').value;
+            const mensagemEl = document.getElementById('message');
+            mensagemEl.innerHTML = ''; // Limpa mensagem anterior
+
+            // Valida os dados (camada de negócios)
+            const validacao = validarDadosUsuario(nome, idade);
+            if (!validacao.valido) {
+                mensagemEl.innerHTML = validacao.mensagem;
+                return;
+            }
+
+            // Salva os dados no "banco de dados" (camada de persistência)
+            salvarUsuario(nome, idade);
+
+            // Atualiza a lista de usuários cadastrados
+            exibirUsuarios();
+
+            // Limpa o formulário
+            document.getElementById('nome').value = '';
+            document.getElementById('idade').value = '';
+
+            mensagemEl.innerHTML = 'Usuário cadastrado com sucesso!';
+        }
+
+        // Função para exibir os usuários cadastrados na tela
+        function exibirUsuarios() {
+            const userListEl = document.getElementById('userList');
+            userListEl.innerHTML = ''; // Limpa a lista anterior
+
+            usuariosCadastrados.forEach((usuario, index) => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.innerHTML = `${index + 1}. Nome: ${usuario.nome}, Idade: ${usuario.idade}`;
+                userListEl.appendChild(userItem);
+            });
+        }
+    </script>
+</body>
+</html>
